@@ -5,8 +5,8 @@
 * For compilation use: gcc -Wall problem1.c -o problem1
 *
 * Sample Output from test runs:
-* Time to output (no forks) = 0.004131 (seconds)
-* Time to output (with forks) = 0.000822 (seconds)
+* Time to output (no forks) = 0.003972 (seconds)
+* Time to output (with forks) = 0.000718 (seconds)
 *
 */
 
@@ -39,7 +39,6 @@ int isPrime(int n)
            return 0;
     }
 
-    //printf("%d is prime\n", n);
     return 1;
 }
 
@@ -65,16 +64,14 @@ int addToEleven(int n)
     return 0;
 }
 
-void writeNum()
-{
-
-}
-
 int main()
 {
-    clock_t time;
-    time = clock();
+    clock_t cpuTime;
+    cpuTime = clock();
     double cpuTimeElapsed;
+
+    time_t start, end;
+    time(&start);
 
     int n = 100000;
 
@@ -89,14 +86,21 @@ int main()
         }
     }
 
-    time = clock() - time;
-    cpuTimeElapsed = ((double)(time))/CLOCKS_PER_SEC;
+    cpuTime = clock() - cpuTime;
+    cpuTimeElapsed = ((double)(cpuTime))/CLOCKS_PER_SEC;
 
-    printf("Time to output (no forks) = %f\n", cpuTimeElapsed);
+    time(&end);
+    printf ("Time Taken: %ld seconds\n", (end -start));
+
+    printf("Time to output (cpu time no forks) = %f seconds\n", cpuTimeElapsed);
 
     //Split 10 ways
 
-    time = clock();
+    pid_t child_pid, waitpid;
+    int status = 0;
+
+    cpuTime = clock();
+    time(&start);
 
     n = 10000;
 
@@ -106,7 +110,7 @@ int main()
     {
         fileName[3] = k + '0';
 
-        if (fork() == 0)
+        if ((child_pid = fork()) == 0)
         {
             for (int j = 10000 * k + 1; j <= n; j++)
             {
@@ -125,9 +129,11 @@ int main()
             n += 10000;
         }
 
-        wait(NULL);
+        //wait(NULL);
 
     }
+
+    while ( (waitpid = wait(&status)>0));
 
     //Merge Files
     FILE *outF = fopen("MergedOutput.txt", "a");
@@ -153,10 +159,13 @@ int main()
         //close files
         fclose(outF);
 
-    time = clock() - time;
-    cpuTimeElapsed = ((double)(time))/CLOCKS_PER_SEC;
+    cpuTime = clock() - cpuTime;
+    cpuTimeElapsed = ((double)(cpuTime))/CLOCKS_PER_SEC;
 
-    printf("Time to output (with forks) = %f\n", cpuTimeElapsed);
+    time(&end);
+    printf ("Time Taken: %ld seconds\n", (end -start));
+
+    printf("Time to output (cpu time with forks) = %f seconds\n", cpuTimeElapsed);
 
 
     return 0;
