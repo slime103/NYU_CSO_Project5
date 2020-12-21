@@ -129,8 +129,6 @@ int main()
             n += 10000;
         }
 
-        //wait(NULL);
-
     }
 
     while ( (waitpid = wait(&status)>0));
