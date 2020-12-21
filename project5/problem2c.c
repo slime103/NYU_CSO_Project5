@@ -1,6 +1,6 @@
 /*
 *
-*
+* Author - Zachary Stephens
 *
 * Compile with gcc -Wall problem2c.c -o problem2c
 *

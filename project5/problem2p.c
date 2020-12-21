@@ -1,9 +1,10 @@
 /*
 *
-*
+*   Author - Zachary Stephens
 *
 * Compile with gcc -Wall problem2p.c -o problem2p
 *
+* IMPORTANT NOTE: Make sure problem2c.c is compiled first before compiling
 *
 */
 
@@ -25,7 +26,7 @@ void handle_sigint(int sig)
 {
     missedQ++;
     outOfTime = 1;
-    printf("Out of Time!\n");
+    printf("Out of Time! Enter any number to continue.\n");
 }
 
 int main(int argc, char **argv)
@@ -50,13 +51,7 @@ int main(int argc, char **argv)
     int i_incorrect = 0;
     int answers[n];
     int i_answers = 0;
-
-    //Create Child process
-    pid = fork();
-    if (pid == 0)
-    {
-        pid= execve("problem2c",NULL, NULL);
-    }
+    int correct = 0;
 
     while (i_answers < n)
     {
@@ -86,6 +81,12 @@ int main(int argc, char **argv)
         answers[i_answers] = answer;
         i_answers++;
 
+        //Create Child process / Timer
+        if ((pid = fork()) == 0)
+        {
+            pid = execve("problem2c", NULL, NULL);
+        }
+
         printf("What is %d %c %d ?\n", n1, charOp, n2);
 
         while (input != answer)
@@ -95,14 +96,15 @@ int main(int argc, char **argv)
 
             if (outOfTime)
             {
-                outOfTime = 0;
                 kill(pid, SIGINT);
+                outOfTime = 0;
                 break;
             }
 
             if (input == answer)
             {
-                printf("You win!\n");
+                correct++;
+                printf("Correct!\n");
 
                 //Reset Timer
                 kill(pid, SIGINT);
@@ -115,6 +117,8 @@ int main(int argc, char **argv)
                 printf("Incorrect, try again.\n");
             }
         }
+
+        kill(pid, SIGKILL);
     }
 
     //print correct answers
@@ -124,19 +128,16 @@ int main(int argc, char **argv)
     {
         printf("%d, ", answers[i]);
     }
-    printf("\n");
+    printf("\nYou had %d correct answers.\n", correct);
 
     //print incorrect answers
 
     printf("Incorrect Answers:\n");
     for (int k = 0; k < i_incorrect; k++)
     {
-        if (i_incorrect < 50)
-            printf("%d, ", incorrect[k]);
-        else
-            printf("You had %d incorrect answers.", i_incorrect);
+        printf("%d, ", incorrect[k]);
     }
-    printf("\n");
+    printf("\nYou had %d incorrect answers.\n", i_incorrect);
 
     //number of question missed
     printf("Number of questions missed: %d\n", missedQ);
