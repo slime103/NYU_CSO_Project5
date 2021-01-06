@@ -7,3 +7,5 @@ The program is meant to display runtime speed difference for I/O with multiple p
 Additionally, it is meant to show the benefit of having multiple processes run that can communicate with each other using signals.
 
 Thanks to my TA Samasth Norway Ananda for answering quesiton while I completed this project.
+
+Feedback for submission "can not use clock for problem1, measures on CPU cycles not elapsed time. Part 2 does not show proper counts".
